@@ -1,0 +1,12 @@
+services:
+  app:
+    container_name: vkbot_v1.0.0
+    image: vkbot
+    build:
+      context: .
+    env_file:
+      - ".env"
+    command: "poetry run python ./src/main.py"
+    volumes:
+      - ./logs:/app/logs
+
