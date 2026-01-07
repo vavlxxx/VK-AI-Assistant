@@ -6,3 +6,4 @@ __pycache__
 dockerfile
 celerybeat*
 README.md
+extras

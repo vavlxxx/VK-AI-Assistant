@@ -1,9 +1,9 @@
-import aiosqlite
-from typing import List, Dict, Optional
-from datetime import datetime
-from pathlib import Path
+from typing import Dict, List, Optional
 
-DB_PATH = Path(__file__).parent.parent / "bot.db"
+import aiosqlite
+
+from src.config import DB_PATH
+
 
 class Database:
     def __init__(self):
@@ -30,19 +30,24 @@ class Database:
                     FOREIGN KEY (chat_id) REFERENCES chats (id)
                 )
             """)
-            # Ensure only one active chat per user restriction is handled in logic, 
+            # Ensure only one active chat per user restriction is handled in logic,
             # but let's add an index for performance
-            await db.execute("CREATE INDEX IF NOT EXISTS idx_chats_user_id ON chats(user_id)")
+            await db.execute(
+                "CREATE INDEX IF NOT EXISTS idx_chats_user_id ON chats(user_id)"
+            )
             await db.commit()
 
     async def create_chat(self, user_id: int, title: str = "New Chat") -> int:
         async with aiosqlite.connect(self.db_path) as db:
             # Deactivate previous chats
-            await db.execute("UPDATE chats SET is_active = 0 WHERE user_id = ? AND is_active = 1", (user_id,))
-            
+            await db.execute(
+                "UPDATE chats SET is_active = 0 WHERE user_id = ? AND is_active = 1",
+                (user_id,),
+            )
+
             cursor = await db.execute(
                 "INSERT INTO chats (user_id, title, is_active) VALUES (?, ?, 1)",
-                (user_id, title)
+                (user_id, title),
             )
             await db.commit()
             return cursor.lastrowid
@@ -51,15 +56,20 @@ class Database:
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute(
                 "SELECT id FROM chats WHERE user_id = ? AND is_active = 1 ORDER BY id DESC LIMIT 1",
-                (user_id,)
+                (user_id,),
             ) as cursor:
                 row = await cursor.fetchone()
                 return row[0] if row else None
 
     async def set_active_chat(self, user_id: int, chat_id: int):
         async with aiosqlite.connect(self.db_path) as db:
-            await db.execute("UPDATE chats SET is_active = 0 WHERE user_id = ?", (user_id,))
-            await db.execute("UPDATE chats SET is_active = 1 WHERE id = ? AND user_id = ?", (chat_id, user_id))
+            await db.execute(
+                "UPDATE chats SET is_active = 0 WHERE user_id = ?", (user_id,)
+            )
+            await db.execute(
+                "UPDATE chats SET is_active = 1 WHERE id = ? AND user_id = ?",
+                (chat_id, user_id),
+            )
             await db.commit()
 
     async def get_user_chats(self, user_id: int, limit: int = 10) -> List[Dict]:
@@ -67,7 +77,7 @@ class Database:
             db.row_factory = aiosqlite.Row
             async with db.execute(
                 "SELECT * FROM chats WHERE user_id = ? ORDER BY created_at DESC LIMIT ?",
-                (user_id, limit)
+                (user_id, limit),
             ) as cursor:
                 rows = await cursor.fetchall()
                 return [dict(row) for row in rows]
@@ -76,7 +86,7 @@ class Database:
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute(
                 "INSERT INTO messages (chat_id, role, content) VALUES (?, ?, ?)",
-                (chat_id, role, content)
+                (chat_id, role, content),
             )
             await db.commit()
 
@@ -87,16 +97,19 @@ class Database:
             # So fetch DESC limit N then reverse
             async with db.execute(
                 "SELECT role, content FROM messages WHERE chat_id = ? ORDER BY id DESC LIMIT ?",
-                (chat_id, limit)
+                (chat_id, limit),
             ) as cursor:
                 rows = await cursor.fetchall()
                 messages = [dict(row) for row in rows]
-                return messages[::-1] # Reverse to get chronological order
+                return messages[::-1]  # Reverse to get chronological order
 
     async def update_chat_title(self, chat_id: int, title: str):
         async with aiosqlite.connect(self.db_path) as db:
-            await db.execute("UPDATE chats SET title = ? WHERE id = ?", (title, chat_id))
+            await db.execute(
+                "UPDATE chats SET title = ? WHERE id = ?", (title, chat_id)
+            )
             await db.commit()
+
 
 # Singleton
 db = Database()
