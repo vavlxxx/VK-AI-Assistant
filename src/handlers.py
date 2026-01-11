@@ -12,8 +12,8 @@ labeler = BotLabeler()
 # Общая клавиатура
 MAIN_MENU_KEYBOARD = (
     Keyboard(one_time=False, inline=False)
-    .add(Text("Новый чат"), color=KeyboardButtonColor.POSITIVE)
-    .add(Text("История чатов"), color=KeyboardButtonColor.PRIMARY)
+    .add(Text("💬 Новый чат"), color=KeyboardButtonColor.POSITIVE)
+    .add(Text("📃 История чатов"), color=KeyboardButtonColor.PRIMARY)
     .get_json()
 )
 
