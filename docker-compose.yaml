@@ -1,6 +1,6 @@
 services:
   app:
-    container_name: vkbot_v1.0.0
+    container_name: vkbot
     image: "vavlxxx/vk-bot"
     build:
       context: .
@@ -9,4 +9,5 @@ services:
     command: "poetry run python ./src/main.py"
     volumes:
       - ./logs:/app/logs
+      - ./bot.db:/app/bot.db
 
