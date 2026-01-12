@@ -41,28 +41,28 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
   
   
-server_update:
-  needs: push_to_registry
-  name: Update server by ssh
-  runs-on: ubuntu-latest
-  steps:
-    - name: Connect and run script
-      uses: appleboy/ssh-action@master
-      env:
-        VK_API_KEY: ${{ secrets.VK_API_KEY }}
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        OPENAI_API_URL: ${{ secrets.OPENAI_API_URL }}
-      with:
-        host: ${{ secrets.SERVER_IP }}
-        port: ${{ secrets.SERVER_PORT }}
-        username: ${{ secrets.SERVER_USER_LOGIN }}
-        password: ${{ secrets.SERVER_USER_PASSWORD }}
-        envs: VK_API_KEY,OPENAI_API_KEY,OPENAI_API_URL
-        script_stop: true
-        script: |
-          export VK_API_KEY=$VK_API_KEY
-          export OPENAI_API_KEY=$OPENAI_API_KEY
-          export OPENAI_API_URL=$OPENAI_API_URL
-          cd ~/app
-          bash deploy.sh
+  server_update:
+    needs: push_to_registry
+    name: Update server by ssh
+    runs-on: ubuntu-latest
+    steps:
+      - name: Connect and run script
+        uses: appleboy/ssh-action@master
+        env:
+          VK_API_KEY: ${{ secrets.VK_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_URL: ${{ secrets.OPENAI_API_URL }}
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          port: ${{ secrets.SERVER_PORT }}
+          username: ${{ secrets.SERVER_USER_LOGIN }}
+          password: ${{ secrets.SERVER_USER_PASSWORD }}
+          envs: VK_API_KEY,OPENAI_API_KEY,OPENAI_API_URL
+          script_stop: true
+          script: |
+            export VK_API_KEY=$VK_API_KEY
+            export OPENAI_API_KEY=$OPENAI_API_KEY
+            export OPENAI_API_URL=$OPENAI_API_URL
+            cd ~/app
+            bash deploy.sh
 
