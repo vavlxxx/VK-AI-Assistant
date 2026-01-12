@@ -12,8 +12,8 @@ labeler = BotLabeler()
 # Общая клавиатура
 MAIN_MENU_KEYBOARD = (
     Keyboard(one_time=False, inline=False)
-    .add(Text("💬 Новый чат"), color=KeyboardButtonColor.POSITIVE)
-    .add(Text("📃 История чатов"), color=KeyboardButtonColor.PRIMARY)
+    .add(Text("Новый чат"), color=KeyboardButtonColor.POSITIVE)
+    .add(Text("История чатов"), color=KeyboardButtonColor.PRIMARY)
     .get_json()
 )
 
@@ -31,7 +31,7 @@ async def show_chat_history(message: Message):
     chats = await db.get_user_chats(message.from_id, limit=5)
 
     if not chats:
-        await message.answer("У вас нет истории чатов.", keyboard=MAIN_MENU_KEYBOARD)
+        await message.answer("💬 У вас нет истории чатов.", keyboard=MAIN_MENU_KEYBOARD)
         return
 
     # Inline клавиатура со списком чатов
@@ -55,7 +55,7 @@ async def show_chat_history(message: Message):
 
     # Можно добавить навигацию, но пока просто последние 5
 
-    await message.answer("Ваши последние чаты:", keyboard=keyboard.get_json())
+    await message.answer("💬 Ваши последние чаты:", keyboard=keyboard.get_json())
 
 
 @labeler.raw_event(GroupEventType.MESSAGE_EVENT, dataclass=MessageEvent)
